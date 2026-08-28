@@ -31,295 +31,25 @@ INSERT INTO products (
     is_featured, status
 ) VALUES
 -- Women's Products
-(
-    gen_random_uuid(), 
-    'Silk Evening Gown', 
-    'silk-evening-gown',
-    'Beautiful floor-length gown crafted from premium silk with delicate embroidery and a flowing silhouette. Perfect for galas, weddings, and black-tie events.', 
-    'Luxurious silk evening gown', 
-    'LEG-001', 
-    'FASHION STORE',
-    '10000000-0000-0000-0000-000000000001',
-    'women',
-    1899.00, 
-    2299.00,
-    '100% Mulberry Silk',
-    'Dry clean only. Store in garment bag.',
-    15,
-    3,
-    true,
-    'published'
-),
-(
-    gen_random_uuid(), 
-    'Cashmere Coat', 
-    'cashmere-coat',
-    'Elegant wool and cashmere blend coat featuring a tailored fit, notch lapel, and double-breasted closure. Perfect for winter sophistication.', 
-    'Warm luxury coat', 
-    'COAT-001', 
-    'FASHION STORE',
-    '10000000-0000-0000-0000-000000000004',
-    'women',
-    899.00, 
-    1200.00,
-    '90% Wool, 10% Cashmere',
-    'Professional dry clean only.',
-    20,
-    5,
-    true,
-    'published'
-),
-(
-    gen_random_uuid(), 
-    'Leather Handbag', 
-    'leather-handbag',
-    'Premium Italian leather tote bag with gold-tone hardware, multiple compartments, and a detachable shoulder strap. Crafted from full-grain calfskin.', 
-    'Luxury leather tote', 
-    'BAG-001', 
-    'FASHION STORE',
-    '10000000-0000-0000-0000-000000000003',
-    'women',
-    599.00, 
-    799.00,
-    'Full-grain Italian Calfskin',
-    'Clean with soft, dry cloth. Avoid water.',
-    25,
-    5,
-    true,
-    'published'
-),
-(
-    gen_random_uuid(), 
-    'Diamond Necklace', 
-    'diamond-necklace',
-    'Stunning diamond pendant necklace featuring a 1.5 carat brilliant-cut diamond set in 18k white gold with a delicate chain.', 
-    'Elegant diamond jewelry', 
-    'JWL-001', 
-    'FASHION STORE',
-    '10000000-0000-0000-0000-000000000002',
-    'women',
-    2999.00, 
-    3999.00,
-    '18k White Gold, 1.5ct Diamond',
-    'Wipe with jewelry cloth. Avoid chemicals.',
-    10,
-    2,
-    true,
-    'published'
-),
-(
-    gen_random_uuid(), 
-    'Designer Heels', 
-    'designer-heels',
-    'Elegant stiletto heels in premium Italian patent leather with a pointed toe, 4-inch heel, and cushioned insole for all-day comfort.', 
-    'Luxury high heels', 
-    'SHOES-001', 
-    'FASHION STORE',
-    '10000000-0000-0000-0000-000000000005',
-    'women',
-    499.00, 
-    699.00,
-    'Italian Patent Leather',
-    'Wipe with soft cloth. Store in dust bag.',
-    18,
-    4,
-    true,
-    'published'
-),
+(gen_random_uuid(), 'Silk Evening Gown', 'silk-evening-gown', 'Beautiful floor-length gown crafted from premium silk with delicate embroidery.', 'Luxurious silk evening gown', 'LEG-001', 'FASHION STORE', '10000000-0000-0000-0000-000000000001', 'women', 198.36, 240.12, '100% Mulberry Silk', 'Dry clean only.', 15, 3, true, 'published'),
+(gen_random_uuid(), 'Cashmere Coat', 'cashmere-coat', 'Elegant wool and cashmere blend coat featuring a tailored fit.', 'Warm luxury coat', 'COAT-001', 'FASHION STORE', '10000000-0000-0000-0000-000000000004', 'women', 130.50, 167.04, '90% Wool, 10% Cashmere', 'Professional dry clean only.', 20, 5, true, 'published'),
+(gen_random_uuid(), 'Leather Handbag', 'leather-handbag', 'Premium Italian leather tote bag with gold-tone hardware.', 'Luxury leather tote', 'BAG-001', 'FASHION STORE', '10000000-0000-0000-0000-000000000003', 'women', 93.95, 125.27, 'Full-grain Italian Calfskin', 'Clean with soft, dry cloth.', 25, 5, true, 'published'),
+(gen_random_uuid(), 'Diamond Necklace', 'diamond-necklace', 'Stunning diamond pendant necklace featuring a 1.5 carat brilliant-cut diamond.', 'Elegant diamond jewelry', 'JWL-001', 'FASHION STORE', '10000000-0000-0000-0000-000000000002', 'women', 261.00, 313.20, '18k White Gold, 1.5ct Diamond', 'Wipe with jewelry cloth.', 10, 2, true, 'published'),
+(gen_random_uuid(), 'Designer Heels', 'designer-heels', 'Elegant stiletto heels in premium Italian patent leather.', 'Luxury high heels', 'SHOES-001', 'FASHION STORE', '10000000-0000-0000-0000-000000000005', 'women', 67.85, 93.95, 'Italian Patent Leather', 'Wipe with soft cloth.', 18, 4, true, 'published'),
 -- Men's Products
-(
-    gen_random_uuid(), 
-    'Italian Wool Suit', 
-    'italian-wool-suit',
-    'Expertly tailored suit crafted from premium Italian wool with a modern slim fit. Perfect for business meetings, weddings, and formal occasions.', 
-    'Premium Italian wool suit', 
-    'SUIT-001', 
-    'FASHION STORE',
-    '20000000-0000-0000-0000-000000000001',
-    'men',
-    1299.00, 
-    1599.00,
-    '100% Italian Wool',
-    'Dry clean only.',
-    12,
-    3,
-    true,
-    'published'
-),
-(
-    gen_random_uuid(), 
-    'Leather Jacket', 
-    'leather-jacket',
-    'Classic biker jacket crafted from premium lambskin leather with a tailored fit. Features a zip front, snap-down lapels, and multiple pockets.', 
-    'Premium leather jacket', 
-    'JKT-001', 
-    'FASHION STORE',
-    '20000000-0000-0000-0000-000000000004',
-    'men',
-    899.00, 
-    1199.00,
-    '100% Lambskin Leather',
-    'Wipe with damp cloth. Condition periodically.',
-    15,
-    4,
-    true,
-    'published'
-),
-(
-    gen_random_uuid(), 
-    'Leather Briefcase', 
-    'leather-briefcase',
-    'Sophisticated leather briefcase crafted from full-grain Italian leather with brass hardware, multiple compartments, and a padded laptop sleeve.', 
-    'Luxury leather briefcase', 
-    'BRIEF-001', 
-    'FASHION STORE',
-    '20000000-0000-0000-0000-000000000003',
-    'men',
-    749.00, 
-    999.00,
-    'Full-grain Italian Leather',
-    'Wipe with soft, dry cloth.',
-    10,
-    2,
-    true,
-    'published'
-),
-(
-    gen_random_uuid(), 
-    'Oxford Dress Shoes', 
-    'oxford-dress-shoes',
-    'Classic Oxford dress shoes crafted from premium calfskin leather with a Goodyear welt construction. Perfect for formal occasions and business wear.', 
-    'Premium Oxford shoes', 
-    'SHOE-001', 
-    'FASHION STORE',
-    '20000000-0000-0000-0000-000000000005',
-    'men',
-    499.00, 
-    699.00,
-    'Italian Calfskin Leather',
-    'Polish regularly. Store with shoe trees.',
-    20,
-    5,
-    true,
-    'published'
-),
-(
-    gen_random_uuid(), 
-    'Silk Tie', 
-    'silk-tie',
-    'Elegant silk tie crafted from premium Italian silk with a subtle pattern. Perfect for business and formal occasions.', 
-    'Luxury silk tie', 
-    'TIE-001', 
-    'FASHION STORE',
-    '20000000-0000-0000-0000-000000000002',
-    'men',
-    199.00, 
-    299.00,
-    '100% Italian Silk',
-    'Dry clean only.',
-    30,
-    6,
-    true,
-    'published'
-),
-(
-    gen_random_uuid(), 
-    'Men''s Designer Backpack', 
-    'mens-designer-backpack',
-    'A sleek, structured leather backpack for the modern professional. Fits laptops up to 15 inches.', 
-    'Luxury leather backpack', 
-    'BAG-002', 
-    'FASHION STORE',
-    '20000000-0000-0000-0000-000000000003',
-    'men',
-    699.00, 
-    899.00,
-    'Full-grain Italian Leather',
-    'Wipe with soft cloth.',
-    15,
-    3,
-    true,
-    'published'
-),
-(
-    gen_random_uuid(), 
-    'Men''s Leather Belt', 
-    'mens-leather-belt',
-    'A classic leather belt with a silver buckle. Perfect for tailoring or casual wear.', 
-    'Classic leather belt', 
-    'BELT-001', 
-    'FASHION STORE',
-    '20000000-0000-0000-0000-000000000002',
-    'men',
-    149.00, 
-    199.00,
-    'Genuine Leather',
-    'Wipe with soft cloth.',
-    40,
-    8,
-    true,
-    'published'
-),
+(gen_random_uuid(), 'Italian Wool Suit', 'italian-wool-suit', 'Expertly tailored suit crafted from premium Italian wool.', 'Premium Italian wool suit', 'SUIT-001', 'FASHION STORE', '20000000-0000-0000-0000-000000000001', 'men', 167.04, 208.80, '100% Italian Wool', 'Dry clean only.', 12, 3, true, 'published'),
+(gen_random_uuid(), 'Leather Jacket', 'leather-jacket', 'Classic biker jacket crafted from premium lambskin leather.', 'Premium leather jacket', 'JKT-001', 'FASHION STORE', '20000000-0000-0000-0000-000000000004', 'men', 125.27, 167.04, '100% Lambskin Leather', 'Wipe with damp cloth.', 15, 4, true, 'published'),
+(gen_random_uuid(), 'Leather Briefcase', 'leather-briefcase', 'Sophisticated leather briefcase with brass hardware and padded laptop sleeve.', 'Luxury leather briefcase', 'BRIEF-001', 'FASHION STORE', '20000000-0000-0000-0000-000000000003', 'men', 104.40, 135.72, 'Full-grain Italian Leather', 'Wipe with soft, dry cloth.', 10, 2, true, 'published'),
+(gen_random_uuid(), 'Oxford Dress Shoes', 'oxford-dress-shoes', 'Classic Oxford dress shoes crafted from premium calfskin leather.', 'Premium Oxford shoes', 'SHOE-001', 'FASHION STORE', '20000000-0000-0000-0000-000000000005', 'men', 62.63, 83.51, 'Italian Calfskin Leather', 'Polish regularly.', 20, 5, true, 'published'),
+(gen_random_uuid(), 'Silk Tie', 'silk-tie', 'Elegant silk tie crafted from premium Italian silk.', 'Luxury silk tie', 'TIE-001', 'FASHION STORE', '20000000-0000-0000-0000-000000000002', 'men', 20.87, 31.31, '100% Italian Silk', 'Dry clean only.', 30, 6, true, 'published'),
+(gen_random_uuid(), 'Men''s Designer Backpack', 'mens-designer-backpack', 'A sleek, structured leather backpack for the modern professional.', 'Luxury leather backpack', 'BAG-002', 'FASHION STORE', '20000000-0000-0000-0000-000000000003', 'men', 88.74, 114.83, 'Full-grain Italian Leather', 'Wipe with soft cloth.', 15, 3, true, 'published'),
+(gen_random_uuid(), 'Men''s Leather Belt', 'mens-leather-belt', 'A classic leather belt with a silver buckle.', 'Classic leather belt', 'BELT-001', 'FASHION STORE', '20000000-0000-0000-0000-000000000002', 'men', 10.43, 15.65, 'Genuine Leather', 'Wipe with soft cloth.', 40, 8, true, 'published'),
+(gen_random_uuid(), 'Men''s Leather Wallet', 'mens-leather-wallet', 'Slim, premium leather wallet for everyday use.', 'Luxury leather wallet', 'WALLET-002', 'FASHION STORE', '20000000-0000-0000-0000-000000000002', 'men', 15.65, 26.09, 'Genuine Leather', 'Wipe with soft cloth.', 30, 5, true, 'published'),
 -- Unisex Products
-(
-    gen_random_uuid(), 
-    'Silver Cufflinks', 
-    'silver-cufflinks',
-    'Elegant sterling silver cufflinks with a classic design. Perfect for formal occasions and business wear.', 
-    'Sterling silver cufflinks', 
-    'CUFF-001', 
-    'FASHION STORE',
-    '30000000-0000-0000-0000-000000000001',
-    'unisex',
-    299.00, 
-    399.00,
-    'Sterling Silver',
-    'Wipe with jewelry cloth.',
-    25,
-    5,
-    true,
-    'published'
-),
-(
-    gen_random_uuid(), 
-    'Leather Wallet', 
-    'leather-wallet',
-    'Premium leather wallet crafted from Italian full-grain leather with multiple card slots and a coin pocket. Available in various colors.', 
-    'Luxury leather wallet', 
-    'WALLET-001', 
-    'FASHION STORE',
-    '30000000-0000-0000-0000-000000000001',
-    'unisex',
-    249.00, 
-    349.00,
-    'Italian Full-grain Leather',
-    'Wipe with soft, dry cloth.',
-    40,
-    8,
-    true,
-    'published'
-),
-(
-    gen_random_uuid(), 
-    'Classic Leather Watch', 
-    'classic-leather-watch',
-    'A timeless timepiece with a genuine leather strap and sapphire crystal glass.', 
-    'Elegant leather watch', 
-    'WATCH-001', 
-    'FASHION STORE',
-    '30000000-0000-0000-0000-000000000003',
-    'unisex',
-    499.00, 
-    699.00,
-    'Genuine Leather, Stainless Steel',
-    'Keep away from water.',
-    20,
-    5,
-    true,
-    'published'
-)
+(gen_random_uuid(), 'Silver Cufflinks', 'silver-cufflinks', 'Elegant sterling silver cufflinks with a classic design.', 'Sterling silver cufflinks', 'CUFF-001', 'FASHION STORE', '30000000-0000-0000-0000-000000000001', 'unisex', 31.31, 41.75, 'Sterling Silver', 'Wipe with jewelry cloth.', 25, 5, true, 'published'),
+(gen_random_uuid(), 'Leather Wallet', 'leather-wallet', 'Premium leather wallet crafted from Italian full-grain leather.', 'Luxury leather wallet', 'WALLET-001', 'FASHION STORE', '30000000-0000-0000-0000-000000000001', 'unisex', 15.65, 26.09, 'Italian Full-grain Leather', 'Wipe with soft, dry cloth.', 40, 8, true, 'published'),
+(gen_random_uuid(), 'Classic Leather Watch', 'classic-leather-watch', 'A timeless timepiece with a genuine leather strap and sapphire crystal glass.', 'Elegant leather watch', 'WATCH-001', 'FASHION STORE', '30000000-0000-0000-0000-000000000003', 'unisex', 73.07, 93.95, 'Genuine Leather, Stainless Steel', 'Keep away from water.', 20, 5, true, 'published')
 ON CONFLICT (id) DO NOTHING;
-
 -- Product Sizes
 INSERT INTO product_sizes (product_id, size, gender, inventory_quantity, sku_suffix)
 SELECT 
@@ -352,10 +82,8 @@ WHERE p.gender = 'men'
 ON CONFLICT DO NOTHING;
 
 -- Product Images (UPDATED TO MATCH YOUR NEW IMAGES)
--- Product Images (UPDATED TO MATCH YOUR FOLDER STRUCTURE: 'men' instead of 'mens')
 INSERT INTO product_images (product_id, image_url, alt_text, is_primary, sort_order)
-SELECT 
-    p.id,
+SELECT p.id,
     CASE 
         WHEN p.gender = 'women' THEN
             CASE 
@@ -376,7 +104,7 @@ SELECT
                 WHEN p.name LIKE '%Suit%' THEN '/product-images/men/italian-wool-suit.jpg'
                 WHEN p.name LIKE '%Jacket%' THEN '/product-images/men/leather-jacket.jpg'
                 WHEN p.name LIKE '%Briefcase%' THEN '/product-images/men/leather-briefcase.jpg'
-                WHEN p.name LIKE '%Shoes%' AND p.name NOT LIKE '%Dress%' THEN '/product-images/men/oxford-dress-shoes.jpg'
+                WHEN p.name LIKE '%Shoes%' THEN '/product-images/men/oxford-dress-shoes.jpg'
                 WHEN p.name LIKE '%Tie%' THEN '/product-images/men/silk-tie.jpg'
                 WHEN p.name LIKE '%Bag%' OR p.name LIKE '%Backpack%' THEN '/product-images/men/mens-bags.jpg'
                 WHEN p.name LIKE '%Jacket%' OR p.name LIKE '%Outerwear%' THEN '/product-images/men/mens-outerwear.jpg'
@@ -392,11 +120,10 @@ SELECT
                 ELSE '/product-images/unisex/placeholder.jpg'
             END
     END,
-    p.name || ' - Main image',
-    true,
-    1
+    p.name || ' - Main image', true, 1
 FROM products p
 ON CONFLICT DO NOTHING;
+
 
 -- AUTH DB
 \c auth_db
