@@ -1,11 +1,12 @@
 """
-Order Service - Order processing and management.
+Product Service - Product catalog management.
 """
-from fastapi import FastAPI, APIRouter
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 import logging
 
+from app.api import products, categories
 from app.core.database import engine, Base
 from app.core.metrics import setup_metrics
 
@@ -15,17 +16,18 @@ logger = logging.getLogger(__name__)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    logger.info("Starting Order Service...")
+    """Lifespan context manager."""
+    logger.info("Starting Product Service...")
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
     logger.info("Database tables created/verified")
     yield
-    logger.info("Shutting down Order Service...")
+    logger.info("Shutting down Product Service...")
     await engine.dispose()
 
 
 app = FastAPI(
-    title="Order Service",
+    title="Product Service",
     version="1.0.0",
     docs_url="/docs",
     redoc_url="/redoc",
@@ -40,32 +42,28 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-setup_metrics(app, service_name="order-service")
+setup_metrics(app, service_name="product-service")
 
-# Create router for order endpoints
-order_router = APIRouter(prefix="/api/orders", tags=["orders"])
 
-@order_router.get("/health")
+# ============================================
+# Health checks - keep these at the app level,
+# NOT in the products router
+# ============================================
+
+@app.get("/api/products/health")
 async def health_check():
-    return {"status": "healthy", "service": "order-service"}
+    """Health check endpoint."""
+    return {"status": "healthy", "service": "product-service"}
 
-@order_router.get("/my-orders")
-async def get_my_orders():
-    return {"message": "My orders endpoint"}
-
-@order_router.post("/")
-async def create_order():
-    return {"message": "Create order endpoint"}
-
-@order_router.get("/{order_id}")
-async def get_order(order_id: str):
-    return {"message": f"Get order {order_id}"}
-
-app.include_router(order_router)
 
 @app.get("/health")
 async def health_check_root():
-    return {"status": "healthy", "service": "order-service"}
+    """Root health check."""
+    return {"status": "healthy", "service": "product-service"}
+
+# Include routers
+app.include_router(categories.router, prefix="/api/products/categories", tags=["categories"])
+app.include_router(products.router, prefix="/api/products", tags=["products"])
 
 
 @app.get("/metrics")

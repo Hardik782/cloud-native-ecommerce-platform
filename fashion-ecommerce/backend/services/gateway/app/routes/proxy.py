@@ -12,12 +12,10 @@ router = APIRouter(prefix="/api", tags=["proxy"])
 
 # Map service prefixes to their base URLs
 SERVICE_ROUTES: Dict[str, str] = {
-    "/auth": settings.AUTH_SERVICE_URL,
-    "/products": settings.PRODUCT_SERVICE_URL,
-    "/categories": settings.PRODUCT_SERVICE_URL,  # Categories are in product service
-    "/orders-management": settings.ORDERS_SERVICE_URL,
-    "/orders": settings.ORDER_SERVICE_URL,
-    "/users": settings.USER_SERVICE_URL,
+    "/auth": settings.AUTH_URL,
+    "/products": settings.PRODUCTS_URL,
+    "/orders": settings.ORDERS_URL,
+    "/users": settings.USERS_URL,
 }
 
 

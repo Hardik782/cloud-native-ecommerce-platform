@@ -1,7 +1,7 @@
-# orders Service
+# order-service Service
 
 ## Overview
-orders service for the fashion e-commerce platform.
+order-service service for the fashion e-commerce platform.
 
 ## Local Development
 

@@ -15,18 +15,14 @@ scrape_configs:
     static_configs:
       - targets: ['fashion-ecommerce-auth:8000']
 
-  - job_name: 'product-service'
+  - job_name: 'products'
     static_configs:
       - targets: ['fashion-ecommerce-products:8000']
 
-  - job_name: 'order-service'
+  - job_name: 'orders'
     static_configs:
       - targets: ['fashion-ecommerce-orders:8000']
 
-  - job_name: 'orders'
-    static_configs:
-      - targets: ['fashion-ecommerce-orders-management:8000']
-
-  - job_name: 'user-service'
+  - job_name: 'users'
     static_configs:
       - targets: ['fashion-ecommerce-users:8000']

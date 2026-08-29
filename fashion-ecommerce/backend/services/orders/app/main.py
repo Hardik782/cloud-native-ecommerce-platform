@@ -1,21 +1,35 @@
 """
-Orders Management Service
+Order Service - Order processing and management.
 """
-from fastapi import FastAPI, APIRouter, Request, Response
+from fastapi import FastAPI, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
-from prometheus_client import Counter, Histogram, Gauge, generate_latest, REGISTRY
+from contextlib import asynccontextmanager
 import logging
-import time
-from typing import Callable
+
+from app.core.database import engine, Base
+from app.core.metrics import setup_metrics
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    logger.info("Starting Order Service...")
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+    logger.info("Database tables created/verified")
+    yield
+    logger.info("Shutting down Order Service...")
+    await engine.dispose()
+
+
 app = FastAPI(
-    title="Orders Management Service",
+    title="Order Service",
     version="1.0.0",
     docs_url="/docs",
     redoc_url="/redoc",
+    lifespan=lifespan,
 )
 
 app.add_middleware(
@@ -26,102 +40,35 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ============================================
-# Metrics Definitions
-# ============================================
+setup_metrics(app, service_name="order-service")
 
-http_requests_total = Counter(
-    'http_requests_total',
-    'Total HTTP requests',
-    ['method', 'endpoint', 'status_code', 'service']
-)
+# Create router for order endpoints
+order_router = APIRouter(prefix="/api/orders", tags=["orders"])
 
-http_request_duration_seconds = Histogram(
-    'http_request_duration_seconds',
-    'HTTP request duration in seconds',
-    ['method', 'endpoint', 'service'],
-    buckets=(0.01, 0.025, 0.05, 0.075, 0.1, 0.25, 0.5, 0.75, 1.0, 2.5, 5.0, 7.5, 10.0)
-)
-
-http_requests_in_progress = Gauge(
-    'http_requests_in_progress',
-    'HTTP requests currently in progress',
-    ['service']
-)
-
-service_info = Gauge(
-    'service_info',
-    'Service information',
-    ['service_name', 'version']
-)
-
-# Set service info
-service_info.labels(service_name="orders-management", version="1.0.0").set(1)
-
-# ============================================
-# Metrics Middleware
-# ============================================
-
-@app.middleware("http")
-async def metrics_middleware(request: Request, call_next: Callable) -> Response:
-    """Middleware to collect HTTP metrics."""
-    start_time = time.time()
-    service_name = "orders-management"
-    
-    http_requests_in_progress.labels(service=service_name).inc()
-    
-    try:
-        response = await call_next(request)
-        duration = time.time() - start_time
-        
-        http_requests_total.labels(
-            method=request.method,
-            endpoint=request.url.path,
-            status_code=response.status_code,
-            service=service_name
-        ).inc()
-        
-        http_request_duration_seconds.labels(
-            method=request.method,
-            endpoint=request.url.path,
-            service=service_name
-        ).observe(duration)
-        
-        return response
-    finally:
-        http_requests_in_progress.labels(service=service_name).dec()
-
-# ============================================
-# Routes
-# ============================================
-
-# Create router for order management endpoints
-orders_router = APIRouter(prefix="/api/orders-management", tags=["orders-management"])
-
-@orders_router.get("/health")
+@order_router.get("/health")
 async def health_check():
-    return {"status": "healthy", "service": "orders-management"}
+    return {"status": "healthy", "service": "order-service"}
 
-@orders_router.get("/")
-async def get_all_orders():
-    return {"message": "Get all orders"}
+@order_router.get("/my-orders")
+async def get_my_orders():
+    return {"message": "My orders endpoint"}
 
-@orders_router.get("/{order_id}")
+@order_router.post("/")
+async def create_order():
+    return {"message": "Create order endpoint"}
+
+@order_router.get("/{order_id}")
 async def get_order(order_id: str):
     return {"message": f"Get order {order_id}"}
 
-app.include_router(orders_router)
+app.include_router(order_router)
 
-# Root health check
 @app.get("/health")
 async def health_check_root():
-    return {"status": "healthy", "service": "orders-management"}
+    return {"status": "healthy", "service": "order-service"}
 
-# ============================================
-# Metrics Endpoint
-# ============================================
 
 @app.get("/metrics")
 async def metrics():
-    """Prometheus metrics endpoint."""
-    return Response(content=generate_latest(REGISTRY), media_type="text/plain")
+    from app.core.metrics import get_metrics
+    return get_metrics()
