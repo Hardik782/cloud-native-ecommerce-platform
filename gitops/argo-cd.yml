@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ecommerce
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/Hardik782/cloud-native-ecommerce-platform.git'
+    targetRevision: main
+    path: gitops
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: ecommerce
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
