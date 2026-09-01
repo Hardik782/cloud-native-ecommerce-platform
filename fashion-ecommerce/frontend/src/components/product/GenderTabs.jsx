@@ -1,7 +1,7 @@
 // src/components/product/GenderTabs.jsx
 import React from "react";
 
-const TABS = ["All", "Women", "Men", "Unisex"];
+const TABS = ["Men", "Women", "Unisex", "All"];
 
 const GenderTabs = ({ active, onChange }) => (
   <div className="gender-tabs">

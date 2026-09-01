@@ -1,15 +1,16 @@
 // src/pages/Home/Home.jsx
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import { getProducts, getCategories } from "../../api/products";
+import { Link, useNavigate } from "react-router-dom";
+import { getProducts } from "../../api/products";
 import ProductCard from "../../components/product/ProductCard";
+import GenderTabs from "../../components/product/GenderTabs";
 import LoadingSpinner from "../../components/common/LoadingSpinner";
 
 const Home = () => {
   const [featured, setFeatured] = useState([]);
-  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -17,18 +18,13 @@ const Home = () => {
       setError(null);
       try {
         // Fetch products
-        const productsRes = await getProducts({ 
-          limit: 8, 
-          sort_by: "created_at", 
-          sort_order: "desc" 
+        const productsRes = await getProducts({
+          limit: 8,
+          sort_by: "created_at",
+          sort_order: "desc"
         });
         const products = productsRes.data?.products || productsRes.data || [];
         setFeatured(products);
-
-        // Fetch categories
-        const categoriesRes = await getCategories();
-        const cats = categoriesRes.data?.categories || categoriesRes.data || [];
-        setCategories(cats);
       } catch (err) {
         console.error("Error fetching data:", err);
         setError(err.message);
@@ -50,6 +46,10 @@ const Home = () => {
     );
   }
 
+  const handleShopBy = (tab) => {
+    navigate(tab === "All" ? "/products" : `/products?gender=${tab.toLowerCase()}`);
+  };
+
   return (
     <div>
       <section className="hero">
@@ -62,37 +62,13 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Category Section - STRICTLY USING DATABASE URL */}
-      {categories.length > 0 && (
-        <section className="section" style={{ paddingTop: '20px', paddingBottom: '30px' }}>
-          <h2 className="section__title" style={{ fontSize: '1.3rem', marginBottom: '16px' }}>
-            Shop by Category
-          </h2>
-          <div className="category-grid">
-            {categories.slice(0, 6).map((category) => (
-              <Link 
-                key={category.id} 
-                to={`/products?category=${encodeURIComponent(category.name)}`}
-                className="category-card"
-              >
-                <div className="category-card__image-wrap">
-                  <img 
-                    src={category.image_url || '/product-images/placeholder.jpg'} 
-                    alt={category.name}
-                    className="category-card__image"
-                    onError={(e) => {
-                      e.target.src = '/product-images/placeholder.jpg';
-                    }}
-                  />
-                  <div className="category-card__overlay">
-                    <h3>{category.name}</h3>
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </section>
-      )}
+      {/* Shop by Gender Section */}
+      <section className="section" style={{ paddingTop: '20px', paddingBottom: '30px' }}>
+        <h2 className="section__title" style={{ fontSize: '1.3rem', marginBottom: '16px' }}>
+          Shop by
+        </h2>
+        <GenderTabs active="All" onChange={handleShopBy} />
+      </section>
 
       {/* New Arrivals Section */}
       <section className="section">
