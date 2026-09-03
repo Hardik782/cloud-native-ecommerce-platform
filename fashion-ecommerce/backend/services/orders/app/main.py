@@ -51,7 +51,8 @@ async def health_check():
 
 @order_router.get("/my-orders")
 async def get_my_orders():
-    return {"message": "My orders endpoint"}
+    """Order history is not implemented yet; always return the documented shape."""
+    return {"orders": []}
 
 @order_router.post("/")
 async def create_order():

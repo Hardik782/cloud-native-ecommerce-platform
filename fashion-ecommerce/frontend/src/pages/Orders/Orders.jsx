@@ -5,13 +5,22 @@ import LoadingSpinner from "../../components/common/LoadingSpinner";
 const Orders = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchOrders = async () => {
       try {
         const res = await getMyOrders();
-        setOrders(res.data.orders || res.data || []);
+        const data = res.data;
+        // Orders API returns { orders: [...] }; guard against other shapes
+        const list = Array.isArray(data)
+          ? data
+          : Array.isArray(data?.orders)
+          ? data.orders
+          : [];
+        setOrders(list);
       } catch (err) {
+        setError(err.message);
         setOrders([]);
       } finally {
         setLoading(false);
@@ -25,7 +34,9 @@ const Orders = () => {
   return (
     <div className="section">
       <h1 className="section__title">Order History</h1>
-      {orders.length === 0 ? (
+      {error ? (
+        <p className="empty-state">Error loading orders: {error}</p>
+      ) : orders.length === 0 ? (
         <p className="empty-state">You haven&apos;t placed any orders yet.</p>
       ) : (
         <div className="order-list">
@@ -33,15 +44,15 @@ const Orders = () => {
             <div key={order.id} className="order-card">
               <div className="order-card__header">
                 <span>Order #{order.id}</span>
-                <span>{order.status}</span>
+                <span>{order.status || "—"}</span>
               </div>
               <p className="order-card__date">
-                {order.createdAt
-                  ? new Date(order.createdAt).toLocaleDateString()
+                {(order.createdAt || order.created_at)
+                  ? new Date(order.createdAt || order.created_at).toLocaleDateString()
                   : ""}
               </p>
               <p className="order-card__total">
-                ${Number(order.total).toFixed(2)}
+                ${Number(order.total || 0).toFixed(2)}
               </p>
             </div>
           ))}
