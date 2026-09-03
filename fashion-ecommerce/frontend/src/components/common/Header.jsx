@@ -53,7 +53,22 @@ const Header = () => {
           </Link>
           {isAuthenticated ? (
             <div className="site-header__account">
-              <Link to="/profile">{user?.first_name || user?.name || "Profile"}</Link>
+              <Link to="/profile" className="site-header__profile-link" title="My Profile">
+                <svg
+                  className="site-header__profile-icon"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                  <circle cx="12" cy="7" r="4" />
+                </svg>
+                <span>{user?.first_name || user?.name || "Profile"}</span>
+              </Link>
               <Link to="/orders">Orders</Link>
               <button onClick={handleLogout} className="link-button">
                 Logout
@@ -61,7 +76,22 @@ const Header = () => {
             </div>
           ) : (
             <div className="site-header__account">
-              <Link to="/login">Login</Link>
+              <Link to="/login" className="site-header__profile-link">
+                <svg
+                  className="site-header__profile-icon"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                  <circle cx="12" cy="7" r="4" />
+                </svg>
+                <span>Login</span>
+              </Link>
               <Link to="/register">Register</Link>
             </div>
           )}
