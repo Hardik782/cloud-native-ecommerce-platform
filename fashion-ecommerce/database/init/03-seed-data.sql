@@ -49,7 +49,7 @@ INSERT INTO products (
 (gen_random_uuid(), 'Silver Cufflinks', 'silver-cufflinks', 'Elegant sterling silver cufflinks with a classic design.', 'Sterling silver cufflinks', 'CUFF-001', 'FASHION STORE', '30000000-0000-0000-0000-000000000001', 'unisex', 31.31, 41.75, 'Sterling Silver', 'Wipe with jewelry cloth.', 25, 5, true, 'published'),
 (gen_random_uuid(), 'Leather Wallet', 'leather-wallet', 'Premium leather wallet crafted from Italian full-grain leather.', 'Luxury leather wallet', 'WALLET-001', 'FASHION STORE', '30000000-0000-0000-0000-000000000001', 'unisex', 15.65, 26.09, 'Italian Full-grain Leather', 'Wipe with soft, dry cloth.', 40, 8, true, 'published'),
 (gen_random_uuid(), 'Classic Leather Watch', 'classic-leather-watch', 'A timeless timepiece with a genuine leather strap and sapphire crystal glass.', 'Elegant leather watch', 'WATCH-001', 'FASHION STORE', '30000000-0000-0000-0000-000000000003', 'unisex', 73.07, 93.95, 'Genuine Leather, Stainless Steel', 'Keep away from water.', 20, 5, true, 'published')
-ON CONFLICT (id) DO NOTHING;
+ON CONFLICT (name) DO NOTHING;
 -- Product Sizes
 INSERT INTO product_sizes (product_id, size, gender, inventory_quantity, sku_suffix)
 SELECT 

@@ -27,7 +27,7 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 -- Categories with gender support
 CREATE TABLE IF NOT EXISTS categories (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    name VARCHAR(100) NOT NULL,
+    name VARCHAR(100) NOT NULL UNIQUE,
     description TEXT,
     gender VARCHAR(20) DEFAULT 'unisex',
     image_url VARCHAR(500),
@@ -39,11 +39,11 @@ CREATE TABLE IF NOT EXISTS categories (
 -- Products with gender support
 CREATE TABLE IF NOT EXISTS products (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    name VARCHAR(255) NOT NULL,
-    slug VARCHAR(255),
+    name VARCHAR(255) NOT NULL UNIQUE,
+    slug VARCHAR(255) UNIQUE,
     description TEXT,
     short_description TEXT,
-    sku VARCHAR(100),
+    sku VARCHAR(100) UNIQUE,
     brand VARCHAR(100),
     category_id UUID REFERENCES categories(id),
     gender VARCHAR(20) DEFAULT 'unisex',
@@ -70,7 +70,8 @@ CREATE TABLE IF NOT EXISTS product_sizes (
     gender VARCHAR(20) DEFAULT 'unisex',
     inventory_quantity INTEGER DEFAULT 0,
     sku_suffix VARCHAR(10),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (product_id, size)
 );
 
 -- Product images
@@ -81,7 +82,8 @@ CREATE TABLE IF NOT EXISTS product_images (
     alt_text VARCHAR(255),
     is_primary BOOLEAN DEFAULT false,
     sort_order INTEGER DEFAULT 1,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (product_id, image_url)
 );
 
 -- ORDERS DB
