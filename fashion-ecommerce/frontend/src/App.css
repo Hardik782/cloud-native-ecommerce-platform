@@ -112,10 +112,24 @@ a {
   align-items: center;
   gap: 16px;
   font-size: 0.8rem;
+  margin-left: auto; /* push Wishlist / Cart / account to the right end */
 }
 
 .site-header__icon-link {
   position: relative;
+}
+
+.site-header__profile-link {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+}
+
+.site-header__profile-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
 }
 
 .site-header__account {
