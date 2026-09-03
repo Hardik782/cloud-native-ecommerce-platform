@@ -47,11 +47,10 @@ async def get_products(
     )
     
     # Apply gender filter
+    # NOTE: unisex products are only shown under the "Unisex" tab and
+    # the "All" view; they must NOT appear in the Men/Women listings.
     if gender and gender != 'all':
-        if gender == 'unisex':
-            query = query.where(Product.gender == 'unisex')
-        else:
-            query = query.where(or_(Product.gender == gender, Product.gender == 'unisex'))
+        query = query.where(Product.gender == gender)
     
     # Apply category filter
     if category:

@@ -37,7 +37,7 @@ class Product(Base):
     __tablename__ = "products"
     
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    name = Column(String(255), nullable=False)
+    name = Column(String(255), nullable=False, unique=True)
     slug = Column(String(255), unique=True, nullable=True)
     description = Column(Text, nullable=True)
     short_description = Column(Text, nullable=True)
