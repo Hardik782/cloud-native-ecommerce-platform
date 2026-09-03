@@ -45,7 +45,7 @@ export const AuthProvider = ({ children }) => {
     setError(null);
     try {
       const res = await loginUser(credentials);
-      const { token, user: userData } = res.data;
+      const { access_token: token, user: userData } = res.data.data;
       if (token) localStorage.setItem("token", token);
       if (userData) {
         // Ensure user has a name field
@@ -60,7 +60,12 @@ export const AuthProvider = ({ children }) => {
       return { success: true };
     } catch (err) {
       const message =
-        err.response?.data?.message || "Login failed. Please try again.";
+        err.response?.data?.message ||
+        (typeof err.response?.data?.detail === "string"
+          ? err.response.data.detail
+          : Array.isArray(err.response?.data?.detail)
+          ? err.response.data.detail[0].msg
+          : "Login failed. Please try again.");
       setError(message);
       return { success: false, message };
     }
@@ -70,7 +75,7 @@ export const AuthProvider = ({ children }) => {
     setError(null);
     try {
       const res = await registerUser(data);
-      const { token, user: userData } = res.data;
+      const { access_token: token, user: userData } = res.data.data;
       if (token) localStorage.setItem("token", token);
       if (userData) {
         if (!userData.name) {
@@ -82,7 +87,12 @@ export const AuthProvider = ({ children }) => {
       return { success: true };
     } catch (err) {
       const message =
-        err.response?.data?.message || "Registration failed. Please try again.";
+        err.response?.data?.message ||
+        (typeof err.response?.data?.detail === "string"
+          ? err.response.data.detail
+          : Array.isArray(err.response?.data?.detail)
+          ? err.response.data.detail[0].msg
+          : "Registration failed. Please try again.");
       setError(message);
       return { success: false, message };
     }

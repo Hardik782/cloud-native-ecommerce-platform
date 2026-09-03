@@ -16,7 +16,15 @@ const Register = () => {
     e.preventDefault();
     setError("");
     setSubmitting(true);
-    const result = await register(form);
+    // Backend expects first_name/last_name (it rejects the single "name" field)
+    const nameParts = form.name.trim().split(/\s+/);
+    const payload = {
+      first_name: nameParts[0] || "",
+      last_name: nameParts.slice(1).join(" ") || null,
+      email: form.email.trim().toLowerCase(),
+      password: form.password,
+    };
+    const result = await register(payload);
     setSubmitting(false);
     if (result.success) {
       navigate("/", { replace: true });
@@ -59,9 +67,10 @@ const Register = () => {
               value={form.password}
               onChange={handleChange}
               required
-              minLength={6}
+              minLength={8}
             />
           </label>
+          <p className="auth-card__hint">Password must be at least 8 characters.</p>
           <button
             type="submit"
             className="button button--primary"
