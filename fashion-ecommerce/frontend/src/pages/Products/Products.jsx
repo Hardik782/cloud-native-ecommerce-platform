@@ -32,6 +32,9 @@ const Products = () => {
       if (gender !== "All") params.gender = gender.toLowerCase();
       if (search) params.search = search;
       if (category) params.category = category;
+      // Load every product at once so the All / Shop All view is not
+      // capped by the backend's default page size (12 items)
+      params.limit = 100;
       if (sort) {
         const [sort_by, sort_order] = sort.split("-");
         params.sort_by = sort_by;
