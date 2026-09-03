@@ -31,6 +31,12 @@ class UserLogin(BaseModel):
     password: str
 
 
+class UserUpdate(BaseModel):
+    """User update schema."""
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+
+
 class UserResponse(UserBase):
     """User response schema."""
     id: UUID
