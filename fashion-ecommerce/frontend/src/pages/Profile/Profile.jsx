@@ -15,14 +15,22 @@ const Profile = () => {
     const fetchProfile = async () => {
       try {
         const res = await getProfile();
-        setName(res.data.name || "");
+        const data = res.data;
+        // auth service returns first_name/last_name; users service may return name
+        const fetchedName =
+          data.name ||
+          `${data.first_name || ""} ${data.last_name || ""}`.trim() ||
+          "";
+        setName(fetchedName || user?.name || "");
       } catch (err) {
         // fall back to context user if request fails
+        if (user?.name) setName(user.name);
       } finally {
         setLoading(false);
       }
     };
     fetchProfile();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleSave = async (e) => {
@@ -30,7 +38,13 @@ const Profile = () => {
     setSaving(true);
     setMessage("");
     try {
-      const res = await updateProfile({ name });
+      // Backend stores the name as first_name/last_name
+      const nameParts = name.trim().split(/\s+/);
+      const payload = {
+        first_name: nameParts[0] || "",
+        last_name: nameParts.slice(1).join(" ") || null,
+      };
+      const res = await updateProfile(payload);
       refreshUser(res.data);
       setMessage("Profile updated successfully.");
       setEditing(false);

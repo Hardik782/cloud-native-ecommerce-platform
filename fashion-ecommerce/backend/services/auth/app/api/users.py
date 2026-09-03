@@ -7,7 +7,7 @@ from sqlalchemy import select
 
 from app.core.database import get_db
 from app.models.user import User
-from app.schemas.user import UserResponse
+from app.schemas.user import UserResponse, UserUpdate
 from app.services.auth_service import AuthService
 from app.core.dependencies import get_current_user
 
@@ -19,6 +19,22 @@ async def get_current_user_info(
     current_user: User = Depends(get_current_user),
 ):
     """Get current user information."""
+    return UserResponse.model_validate(current_user)
+
+
+@router.put("/me", response_model=UserResponse)
+async def update_current_user_info(
+    update_data: UserUpdate,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Update current user's profile (first/last name)."""
+    if update_data.first_name is not None:
+        current_user.first_name = update_data.first_name
+    if update_data.last_name is not None:
+        current_user.last_name = update_data.last_name
+    await db.commit()
+    await db.refresh(current_user)
     return UserResponse.model_validate(current_user)
 
 

@@ -1,5 +1,5 @@
 import client from "./client";
 
-export const getProfile = () => client.get("/users/me");
+export const getProfile = () => client.get("/auth/users/me");
 
-export const updateProfile = (data) => client.put("/users/me", data);
+export const updateProfile = (data) => client.put("/auth/users/me", data);
