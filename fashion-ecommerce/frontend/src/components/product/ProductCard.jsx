@@ -3,6 +3,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { useWishlist } from "../../contexts/WishlistContext";
 import { getINRPrice } from "../../utils/price";
+import GenderTag from "./GenderTag";
 
 const ProductCard = ({ product }) => {
   const { isWishlisted, toggleWishlist } = useWishlist();
@@ -41,6 +42,7 @@ const ProductCard = ({ product }) => {
             }}
           />
         </Link>
+        <GenderTag gender={product.gender} className="product-card__gender-tag" />
         <button
           className={`product-card__wishlist ${
             wishlisted ? "product-card__wishlist--active" : ""

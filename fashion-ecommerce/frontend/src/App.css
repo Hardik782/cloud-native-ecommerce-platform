@@ -314,6 +314,44 @@ a {
   font-weight: 600;
 }
 
+/* ---------- Gender Tag ---------- */
+.product-tag {
+  display: inline-block;
+  padding: 4px 10px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  line-height: 1;
+  color: var(--color-white);
+  border-radius: 20px;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.product-card__gender-tag {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 1;
+}
+
+.product-detail__gender-tag {
+  margin: 0 0 6px;
+}
+
+.product-tag--men {
+  background: #223a5e;
+}
+
+.product-tag--women {
+  background: #a96a72;
+}
+
+.product-tag--unisex {
+  background: #595959;
+}
+
 /* ---------- Gender Tabs ---------- */
 .gender-tabs {
   display: flex;

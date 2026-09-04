@@ -5,6 +5,7 @@ import { getProduct } from "../../api/products";
 import { useCart } from "../../contexts/CartContext";
 import { useWishlist } from "../../contexts/WishlistContext";
 import LoadingSpinner from "../../components/common/LoadingSpinner";
+import GenderTag from "../../components/product/GenderTag";
 import { getINRPrice, getINRComparePrice } from "../../utils/price";
 
 const ProductDetail = () => {
@@ -84,6 +85,10 @@ const ProductDetail = () => {
         <button className="link-button" onClick={() => navigate(-1)}>
           &larr; Back
         </button>
+        <GenderTag
+          gender={product.gender}
+          className="product-detail__gender-tag"
+        />
         <h1>{product.name}</h1>
         <p className="product-detail__price">
           {inrPrice}
