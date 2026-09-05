@@ -51,7 +51,6 @@ resource "helm_release" "monitoring" {
         service = {
           type = "ClusterIP"
         }
-        adminPassword = "admin"
       }
       prometheus = {
         service = {
