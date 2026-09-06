@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 import logging
 
-from app.api import products, categories
+from app.api import products
 from app.core.database import engine, Base
 from app.core.metrics import setup_metrics
 
@@ -62,7 +62,6 @@ async def health_check_root():
     return {"status": "healthy", "service": "product-service"}
 
 # Include routers
-app.include_router(categories.router, prefix="/api/products/categories", tags=["categories"])
 app.include_router(products.router, prefix="/api/products", tags=["products"])
 
 
