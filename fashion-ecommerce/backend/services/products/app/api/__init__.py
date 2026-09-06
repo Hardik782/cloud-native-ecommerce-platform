@@ -1,2 +1,2 @@
 """API package."""
-from app.api import products, categories
+from app.api import products
