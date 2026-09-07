@@ -8,6 +8,8 @@ resources:
   - secrets.yml
   - k8s/database/statefulset.yml
   - k8s/database/service.yml
+  - k8s/database/configmap.yml
+  - k8s/database/restore-job.yml
   - k8s/backend/gateway.yml
   - k8s/backend/auth.yml
   - k8s/backend/products.yml
