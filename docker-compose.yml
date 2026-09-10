@@ -3,9 +3,9 @@ services:
     image: postgres:15-alpine
     container_name: fashion-ecommerce-postgres
     environment:
-      POSTGRES_DB: fashion_db
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres123
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - "5432:5432"
     volumes:
@@ -60,12 +60,12 @@ services:
     ports:
       - "3002:8000"  # Changed from 8002 to 3002
     environment:
-      - DATABASE_URL=postgresql://postgres:postgres123@postgres:5432/auth_db
+      - DATABASE_URL=${AUTH_DB_URL}
       - SERVICE_NAME=auth
-      - SERVICE_PORT=8000
-      - JWT_SECRET=your-super-secret-key-change-in-production
-      - JWT_ALGORITHM=HS256
-      - JWT_EXPIRES_IN=3600
+      - SERVICE_PORT=${SERVICE_PORT}
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_ALGORITHM=${JWT_ALGORITHM}
+      - JWT_EXPIRES_IN=${JWT_EXPIRES_IN}
     depends_on:
       postgres:
         condition: service_healthy
@@ -81,9 +81,9 @@ services:
     ports:
       - "3003:8000"  # Changed from 8003 to 3003
     environment:
-      - DATABASE_URL=postgresql://postgres:postgres123@postgres:5432/products_db
+      - DATABASE_URL=${PRODUCTS_DB_URL}
       - SERVICE_NAME=products
-      - SERVICE_PORT=8000
+      - SERVICE_PORT=${SERVICE_PORT}
     depends_on:
       postgres:
         condition: service_healthy
@@ -99,11 +99,11 @@ services:
     ports:
       - "3004:8000"  # Changed from 8004 to 3004
     environment:
-      - DATABASE_URL=postgresql://postgres:postgres123@postgres:5432/orders_db
+      - DATABASE_URL=${ORDERS_DB_URL}
       - SERVICE_NAME=orders
-      - SERVICE_PORT=8000
-      - AUTH_SERVICE_URL=http://fashion-ecommerce-auth:8000
-      - PRODUCT_SERVICE_URL=http://fashion-ecommerce-products:8000
+      - SERVICE_PORT=${SERVICE_PORT}
+      - AUTH_SERVICE_URL=${AUTH_SERVICE_URL}
+      - PRODUCT_SERVICE_URL=${PRODUCT_SERVICE_URL}
     depends_on:
       postgres:
         condition: service_healthy
@@ -120,9 +120,9 @@ services:
     ports:
       - "3005:8000"
     environment:
-      - DATABASE_URL=postgresql://postgres:postgres123@postgres:5432/users_db
+      - DATABASE_URL=${USERS_DB_URL}
       - SERVICE_NAME=users
-      - SERVICE_PORT=8000
+      - SERVICE_PORT=${SERVICE_PORT}
     depends_on:
       postgres:
         condition: service_healthy
@@ -139,11 +139,11 @@ services:
       - "3001:8000"  # Changed from 8001 to 3001
     environment:
       - SERVICE_NAME=gateway
-      - SERVICE_PORT=8000
-      - AUTH_URL=http://fashion-ecommerce-auth:8000
-      - PRODUCTS_URL=http://fashion-ecommerce-products:8000
-      - ORDERS_URL=http://fashion-ecommerce-orders:8000
-      - USERS_URL=http://fashion-ecommerce-users:8000
+      - SERVICE_PORT=${SERVICE_PORT}
+      - AUTH_URL=${AUTH_URL}
+      - PRODUCTS_URL=${PRODUCTS_URL}
+      - ORDERS_URL=${ORDERS_URL}
+      - USERS_URL=${USERS_URL}
     depends_on:
       - auth
       - products
@@ -161,7 +161,7 @@ services:
     ports:
       - "3000:80"
     environment:
-      - REACT_APP_API_URL=http://localhost:3001/api
+      - REACT_APP_API_URL=${REACT_APP_API_URL}
     depends_on:
       - gateway
     networks:

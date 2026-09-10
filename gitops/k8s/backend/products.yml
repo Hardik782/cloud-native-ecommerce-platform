@@ -20,7 +20,15 @@ spec:
             - containerPort: 8000
           env:
             - name: SERVICE_NAME
-              value: "products"
+              valueFrom:
+                secretKeyRef:
+                  name: ecommerce-secrets
+                  key: PRODUCTS_SERVICE_NAME
+            - name: SERVICE_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: ecommerce-secrets
+                  key: PRODUCTS_SERVICE_PORT
             - name: DATABASE_URL
               valueFrom:
                 secretKeyRef:

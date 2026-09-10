@@ -20,12 +20,30 @@ spec:
             - containerPort: 8000
           env:
             - name: SERVICE_NAME
-              value: "orders"
+              valueFrom:
+                secretKeyRef:
+                  name: ecommerce-secrets
+                  key: ORDERS_SERVICE_NAME
+            - name: SERVICE_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: ecommerce-secrets
+                  key: ORDERS_SERVICE_PORT
             - name: DATABASE_URL
               valueFrom:
                 secretKeyRef:
                   name: ecommerce-secrets
                   key: ORDERS_DB_URL
+            - name: AUTH_SERVICE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: ecommerce-secrets
+                  key: AUTH_SERVICE_URL
+            - name: PRODUCT_SERVICE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: ecommerce-secrets
+                  key: PRODUCT_SERVICE_URL
           livenessProbe:
             httpGet:
               path: /health

@@ -43,7 +43,7 @@ app.add_middleware(
 )
 
 # Metrics
-setup_metrics(app, service_name="gateway")
+setup_metrics(app, service_name=settings.SERVICE_NAME)
 
 # Include proxy routes
 app.include_router(proxy.router)
@@ -52,7 +52,7 @@ app.include_router(proxy.router)
 @app.get("/health")
 async def health_check():
     """Health check endpoint."""
-    return {"status": "healthy", "service": "gateway"}
+    return {"status": "healthy", "service": settings.SERVICE_NAME}
 
 
 @app.get("/metrics")

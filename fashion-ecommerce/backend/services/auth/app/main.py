@@ -7,6 +7,7 @@ from contextlib import asynccontextmanager
 import logging
 
 from app.api import auth, users
+from app.core.config import settings
 from app.core.database import engine, Base
 from app.core.metrics import setup_metrics
 
@@ -47,7 +48,7 @@ app.add_middleware(
 )
 
 # Metrics
-setup_metrics(app, service_name="auth")
+setup_metrics(app, service_name=settings.SERVICE_NAME)
 
 # Include all routers under /auth prefix
 # This means all endpoints will be available at /auth/*
@@ -58,13 +59,13 @@ app.include_router(users.router, prefix="/api/auth/users", tags=["users"])
 @app.get("/api/auth/health")
 async def health_check():
     """Health check endpoint."""
-    return {"status": "healthy", "service": "auth"}
+    return {"status": "healthy", "service": settings.SERVICE_NAME}
 
 
 @app.get("/health")
 async def health_check_root():
     """Root health check endpoint."""
-    return {"status": "healthy", "service": "auth"}
+    return {"status": "healthy", "service": settings.SERVICE_NAME}
 
 
 @app.get("/metrics")

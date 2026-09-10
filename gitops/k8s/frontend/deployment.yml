@@ -20,7 +20,10 @@ spec:
             - containerPort: 80
           env:
             - name: REACT_APP_API_URL
-              value: "http://gateway:3001/api"
+              valueFrom:
+                secretKeyRef:
+                  name: ecommerce-secrets
+                  key: REACT_APP_API_URL
 ---
 apiVersion: v1
 kind: Service

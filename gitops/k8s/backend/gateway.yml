@@ -20,15 +20,35 @@ spec:
             - containerPort: 8000
           env:
             - name: SERVICE_NAME
-              value: "gateway"
+              valueFrom:
+                secretKeyRef:
+                  name: ecommerce-secrets
+                  key: GATEWAY_SERVICE_NAME
+            - name: SERVICE_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: ecommerce-secrets
+                  key: GATEWAY_SERVICE_PORT
             - name: AUTH_URL
-              value: "http://auth:3002"
+              valueFrom:
+                secretKeyRef:
+                  name: ecommerce-secrets
+                  key: AUTH_URL
             - name: PRODUCTS_URL
-              value: "http://products:3003"
+              valueFrom:
+                secretKeyRef:
+                  name: ecommerce-secrets
+                  key: PRODUCTS_URL
             - name: ORDERS_URL
-              value: "http://orders:3004"
+              valueFrom:
+                secretKeyRef:
+                  name: ecommerce-secrets
+                  key: ORDERS_URL
             - name: USERS_URL
-              value: "http://users:3005"
+              valueFrom:
+                secretKeyRef:
+                  name: ecommerce-secrets
+                  key: USERS_URL
           livenessProbe:
             httpGet:
               path: /health

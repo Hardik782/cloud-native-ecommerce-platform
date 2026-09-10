@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 import logging
 
+from app.core.config import settings
 from app.core.database import engine, Base
 from app.core.metrics import setup_metrics
 
@@ -40,14 +41,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-setup_metrics(app, service_name="user-service")
+setup_metrics(app, service_name=settings.SERVICE_NAME)
 
 # Create router for user endpoints
 user_router = APIRouter(prefix="/api/users", tags=["users"])
 
 @user_router.get("/health")
 async def health_check():
-    return {"status": "healthy", "service": "user-service"}
+    return {"status": "healthy", "service": settings.SERVICE_NAME}
 
 @user_router.get("/me")
 async def get_current_user():
@@ -65,7 +66,7 @@ app.include_router(user_router)
 
 @app.get("/health")
 async def health_check_root():
-    return {"status": "healthy", "service": "user-service"}
+    return {"status": "healthy", "service": settings.SERVICE_NAME}
 
 @app.get("/metrics")
 async def metrics():
