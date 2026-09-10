@@ -7,6 +7,7 @@ from contextlib import asynccontextmanager
 import logging
 
 from app.api import products
+from app.core.config import settings
 from app.core.database import engine, Base
 from app.core.metrics import setup_metrics
 
@@ -42,7 +43,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-setup_metrics(app, service_name="product-service")
+setup_metrics(app, service_name=settings.SERVICE_NAME)
 
 
 # ============================================
@@ -53,13 +54,13 @@ setup_metrics(app, service_name="product-service")
 @app.get("/api/products/health")
 async def health_check():
     """Health check endpoint."""
-    return {"status": "healthy", "service": "product-service"}
+    return {"status": "healthy", "service": settings.SERVICE_NAME}
 
 
 @app.get("/health")
 async def health_check_root():
     """Root health check."""
-    return {"status": "healthy", "service": "product-service"}
+    return {"status": "healthy", "service": settings.SERVICE_NAME}
 
 # Include routers
 app.include_router(products.router, prefix="/api/products", tags=["products"])

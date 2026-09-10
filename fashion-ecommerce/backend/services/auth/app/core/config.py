@@ -1,27 +1,36 @@
 """
 Auth service configuration.
+
+All values are read from environment variables instead of being hardcoded.
+Values are injected by:
+  - Docker Compose: from the root `.env` file (see docker-compose.yml)
+  - Kubernetes: from the `ecommerce-secrets` Secret (see gitops/secrets.yml)
+  - Local development: from a `.env` file placed next to this service
 """
-from pydantic_settings import BaseSettings
-from typing import Optional
+from pydantic import Field
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    """Application settings."""
-    
-    SERVICE_NAME: str = "auth"
-    SERVICE_PORT: int = 8000
-    
-    # Database
-    DATABASE_URL: str = "postgresql://postgres:postgres123@postgres:5432/auth_db"
-    
+    """Application settings loaded from environment variables."""
+
+    # Service
+    SERVICE_NAME: str = Field(min_length=1)
+    SERVICE_PORT: int = Field(ge=1, le=65535)
+
+    # Database (format: postgresql://user:password@host:port/database)
+    DATABASE_URL: str = Field(min_length=1)
+
     # JWT
-    JWT_SECRET: str = "your-super-secret-key-change-in-production"
-    JWT_ALGORITHM: str = "HS256"
-    JWT_EXPIRES_IN: int = 3600  # 1 hour
-    
-    class Config:
-        env_file = ".env"
-        env_file_encoding = "utf-8"
+    JWT_SECRET: str = Field(min_length=1)
+    JWT_ALGORITHM: str = Field(min_length=1)
+    JWT_EXPIRES_IN: int = Field(ge=1)
+
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        extra="ignore",
+    )
 
 
 settings = Settings()
