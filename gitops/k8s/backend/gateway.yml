@@ -22,13 +22,13 @@ spec:
             - name: SERVICE_NAME
               value: "gateway"
             - name: AUTH_URL
-              value: "http://auth:8000"
+              value: "http://auth:3002"
             - name: PRODUCTS_URL
-              value: "http://products:8000"
+              value: "http://products:3003"
             - name: ORDERS_URL
-              value: "http://orders:8000"
+              value: "http://orders:3004"
             - name: USERS_URL
-              value: "http://users:8000"
+              value: "http://users:3005"
           livenessProbe:
             httpGet:
               path: /health
@@ -52,6 +52,6 @@ spec:
     app: gateway
   ports:
     - name: http
-      port: 8000
+      port: 3001
       targetPort: 8000
   type: ClusterIP

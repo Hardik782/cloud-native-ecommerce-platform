@@ -49,6 +49,6 @@ spec:
     app: users
   ports:
     - name: http
-      port: 8000
+      port: 3005
       targetPort: 8000
   type: ClusterIP

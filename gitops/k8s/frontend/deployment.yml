@@ -20,7 +20,7 @@ spec:
             - containerPort: 80
           env:
             - name: REACT_APP_API_URL
-              value: "http://gateway:8000/api"
+              value: "http://gateway:3001/api"
 ---
 apiVersion: v1
 kind: Service

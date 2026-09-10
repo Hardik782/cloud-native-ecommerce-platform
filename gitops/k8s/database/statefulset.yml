@@ -4,7 +4,7 @@ metadata:
   name: postgres
   namespace: ecommerce
 spec:
-  serviceName: postgres
+  serviceName: postgres-service
   replicas: 1
   selector:
     matchLabels:
@@ -32,6 +32,8 @@ spec:
           volumeMounts:
             - name: postgres-data
               mountPath: /var/lib/postgresql/data
+            - name: init-scripts          # ← ADD
+              mountPath: /docker-entrypoint-initdb.d
           readinessProbe:
             exec:
               command:
@@ -40,6 +42,10 @@ spec:
                 - pg_isready -U postgres
             initialDelaySeconds: 10
             periodSeconds: 5
+      volumes:                        # ← ADD
+        - name: init-scripts
+          configMap:
+            name: postgres-init-scripts
   volumeClaimTemplates:
     - metadata:
         name: postgres-data

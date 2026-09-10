@@ -49,6 +49,6 @@ spec:
     app: orders
   ports:
     - name: http
-      port: 8000
+      port: 3004
       targetPort: 8000
   type: ClusterIP
