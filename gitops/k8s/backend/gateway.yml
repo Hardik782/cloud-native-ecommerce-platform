@@ -65,7 +65,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: gateway
+  name: gateway-service
   namespace: ecommerce
 spec:
   selector:
