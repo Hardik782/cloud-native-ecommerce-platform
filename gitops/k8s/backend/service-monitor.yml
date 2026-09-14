@@ -9,6 +9,9 @@ spec:
   namespaceSelector:
     matchNames:
       - ecommerce
+  # Use the Service's `app` label as the Prometheus `job` label so dashboard
+  # queries like `http_requests_total{job=~"gateway|auth|..."}` match correctly.
+  jobLabel: app
   selector:
     matchExpressions:
       - key: app

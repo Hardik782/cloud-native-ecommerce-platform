@@ -62,6 +62,8 @@ kind: Service
 metadata:
   name: orders-service
   namespace: ecommerce
+  labels:
+    app: orders
 spec:
   selector:
     app: orders

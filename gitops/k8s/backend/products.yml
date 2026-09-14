@@ -52,6 +52,8 @@ kind: Service
 metadata:
   name: products-service
   namespace: ecommerce
+  labels:
+    app: products
 spec:
   selector:
     app: products
