@@ -67,6 +67,8 @@ kind: Service
 metadata:
   name: gateway-service
   namespace: ecommerce
+  labels:
+    app: gateway
 spec:
   selector:
     app: gateway
