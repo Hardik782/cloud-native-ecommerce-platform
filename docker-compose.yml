@@ -159,7 +159,9 @@ services:
       dockerfile: Dockerfile
     container_name: fashion-ecommerce-frontend
     ports:
-      - "3000:80"
+      - "80:80"
+    environment:
+      - GATEWAY_URL=${GATEWAY_URL}
     depends_on:
       - gateway
     networks:

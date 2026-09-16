@@ -22,8 +22,11 @@ RUN rm -rf /usr/share/nginx/html/*
 # Copy built app
 COPY --from=build /app/build /usr/share/nginx/html
 
-# Custom nginx config (SPA fallback for React Router)
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Only substitute GATEWAY_URL, leave any other $vars alone
+ENV NGINX_ENVSUBST_FILTER=GATEWAY_URL
+
+# The entrypoint picks this up and writes /etc/nginx/conf.d/default.conf
+COPY nginx.conf.template /etc/nginx/templates/default.conf.template
 
 EXPOSE 80
 
