@@ -18,6 +18,12 @@ spec:
           image: <AWS_ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/frontend:latest
           ports:
             - containerPort: 80
+      env:
+            - name: GATEWAY_URL
+              valueFrom:
+                secretKeyRef:
+                  name: ecommerce-secrets
+                  key: GATEWAY_SERVICE_URL
 
 ---
 apiVersion: v1
