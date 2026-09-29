@@ -1,28 +1,71 @@
+# ==========================================================================
+# Prometheus scrape configuration - Docker Compose
+#
+# Jobs:
+#   prometheus  -> Prometheus itself
+#   gateway, auth, products, orders, users
+#               -> the /metrics endpoint of every backend service
+#   cadvisor    -> the container_* metrics of the Docker engine
+#
+# Labels: the "Ecommerce Microservices" dashboard
+# (grafana/dashboards/ecommerce-microservices.json) reads container panels
+# by `container` (the compose service running in that container), taken
+# straight from Docker's own compose-service label.
+# ==========================================================================
+
 global:
-  scrape_interval: 15s
-  evaluation_interval: 15s
+  scrape_interval: 30s
+  evaluation_interval: 30s
 
 scrape_configs:
+  # --- Prometheus itself --------------------------------------------------
   - job_name: 'prometheus'
     static_configs:
       - targets: ['localhost:9090']
 
+  # --- Backend services ---------------------------------------------------
+  # Every service exposes Prometheus metrics on /metrics
+  # (app/core/metrics.py in each service).
   - job_name: 'gateway'
+    metrics_path: /metrics
+    scrape_interval: 15s
     static_configs:
       - targets: ['fashion-ecommerce-gateway:8000']
 
   - job_name: 'auth'
+    metrics_path: /metrics
+    scrape_interval: 15s
     static_configs:
       - targets: ['fashion-ecommerce-auth:8000']
 
   - job_name: 'products'
+    metrics_path: /metrics
+    scrape_interval: 15s
     static_configs:
       - targets: ['fashion-ecommerce-products:8000']
 
   - job_name: 'orders'
+    metrics_path: /metrics
+    scrape_interval: 15s
     static_configs:
       - targets: ['fashion-ecommerce-orders:8000']
 
   - job_name: 'users'
+    metrics_path: /metrics
+    scrape_interval: 15s
     static_configs:
       - targets: ['fashion-ecommerce-users:8000']
+
+  # --- Containers ---------------------------------------------------------
+  # cadvisor exposes the Docker engine's container_* metrics; the relabel rule
+  # below maps Docker's own compose-service label onto the label the
+  # dashboard reads:
+  #   container_label_com_docker_compose_service -> container (compose service)
+  - job_name: 'cadvisor'
+    scrape_interval: 15s
+    static_configs:
+      - targets: ['cadvisor:8080']
+    metric_relabel_configs:
+      # container = the compose service running in that container
+      - source_labels: [container_label_com_docker_compose_service]
+        target_label: container

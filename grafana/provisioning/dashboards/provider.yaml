@@ -1,0 +1,22 @@
+# ==========================================================================
+# Grafana dashboard provider
+#
+# Loads every JSON file in /tmp/dashboards, where grafana/dashboards/ is
+# mounted by the `grafana` service in docker-compose.yml.
+#
+# The dashboard keeps the uid `ecommerce-microservices`, so its URL is stable:
+#   http://localhost:8080/d/ecommerce-microservices/ecommerce-microservices
+# ==========================================================================
+apiVersion: 1
+
+providers:
+  - name: 'ecommerce-dashboards'
+    orgId: 1
+    folder: ''
+    type: file
+    disableDeletion: false
+    allowUiUpdates: false
+    updateIntervalSeconds: 30
+    options:
+      path: /tmp/dashboards
+      foldersFromFilesStructure: false

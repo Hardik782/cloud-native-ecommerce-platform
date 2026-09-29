@@ -2,6 +2,9 @@ apiVersion: 1
 
 datasources:
   - name: Prometheus
+    # uid must match the dashboard JSON and its $service variable template
+    # ("uid": "prometheus"), otherwise every panel shows "datasource not found".
+    uid: prometheus
     type: prometheus
     access: proxy
     url: http://prometheus:9090
