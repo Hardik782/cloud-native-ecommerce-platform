@@ -96,7 +96,7 @@ docker run --rm -p 3001:8000 \
   ecommerce-gateway
 ```
 
-In the full stack (`docker compose up`), the gateway answers on `http://localhost:3001` as well, but the container listens on **3001** (`SERVICE_PORT=3001`, `ports: "3001:3001"`) and the frontend reaches it as **`gateway-service`** — see [Why the gateway listens on `3001`](#why-the-gateway-listens-on-3001-docker-compose).
+In the full stack (`docker compose up`), Compose builds this same image and runs it with `ports: "3001:8000"` — the container listens on **8000** (`SERVICE_PORT=8000` from the root `.env`) and the host port is `3001`. The frontend's nginx reaches the container directly by its Compose service name, **`fashion-ecommerce-gateway:8000`** (the `GATEWAY_URL` value from the root `.env`) — see the [frontend README](../../../frontend/README.md). The `gateway-service` DNS name (`http://gateway-service:3001`) is the **Kubernetes** ClusterIP Service, not the Compose name.
 
 ## Observability
 

@@ -25,6 +25,6 @@ fashion-ecommerce/
 
 ## Running locally
 
-The simplest way is at the **repository root** — follow the [Quick Start in the root README](../README.md#quick-start-docker-compose) (`cp .env.example .env`, then `docker compose up -d --build`).
+The simplest way is at the **repository root** — follow the [Docker Compose deployment guide in the root README](../README.md#deploy-with-docker-compose-local-development) (`cp .env.example .env`, then `docker compose up -d --build`).
 
 For per-service development instructions see each service's README under `backend/services/`.

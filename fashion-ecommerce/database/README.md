@@ -22,7 +22,7 @@ One PostgreSQL 15 server hosts **four logical databases**, one per microservice:
 | --------------- | ---------------- | ------------------------------------------------------- |
 | `auth_db`       | auth             | `users` (email, password_hash, role, …)                  |
 | `products_db`   | products         | `categories`, `products`, `product_sizes`, `product_images` |
-| `orders_db`     | orders           | (no tables yet — endpoints are contract stubs)           |
+| `orders_db`     | orders           | `orders`, `order_items` (tables created by the schema; the orders service endpoints are still contract stubs, so nothing is persisted yet) |
 | `users_db`      | users            | `users` (profile data)                                   |
 
 All tables use `UUID` primary keys (`uuid_generate_v4()`) and `created_at`/`updated_at` timestamps.

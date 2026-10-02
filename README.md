@@ -255,7 +255,7 @@ This creates the VPC, the EKS cluster (1–3 `t3.medium` nodes), 6 ECR repositor
 
 ### 2. Build and push images to ECR
 
-Build, tag and push each service image to the ECR URLs from `terraform output ecr_urls` (replace the `<AWS_ACCOUNT_ID>` placeholder). The Kubernetes manifests reference these exact image names — unlike Docker Compose, images are **not** built on the deployment host.
+Either let the CI pipeline do it (GitHub → **Actions** → *E-Commerce Platform CI Pipeline* → **Run workflow** — it builds and pushes all six images and bumps the manifest tags in one pass, see [CI / CD](#ci--cd)), or do it manually: build, tag and push each service image to the ECR URLs from `terraform output ecr_urls` (replace the `<AWS_ACCOUNT_ID>` placeholder). The Kubernetes manifests reference these exact image names — unlike Docker Compose, images are **not** built on the deployment host.
 
 ### 3. Deploy the application (Argo CD)
 
@@ -277,10 +277,39 @@ Register the Argo CD `Application` (already defined in [`gitops/argo-cd.yml`](gi
 
 ---
 
-## CI / CD (current state)
+## CI / CD
 
-- **CD — GitOps with Argo CD (Kubernetes only):** the `ecommerce` Application ([`gitops/argo-cd.yml`](gitops/README.md)) points at this repository (`path: gitops`, `branch: main`) and continuously syncs the manifests into the cluster with auto-prune + self-heal.
+| Stage              | Tool                                                                     | What it does                                                                  |
+| ------------------ | ------------------------------------------------------------------------ | ----------------------------------------------------------------------------- |
+| CI — build & push  | GitHub Actions — [`.github/workflows/ci.yml`](.github/workflows/ci.yml)  | Builds all 6 images and pushes them to ECR tagged with the commit SHA.        |
+| Manifest promotion | Same workflow, `update-manifests` job                                     | Rewrites the image tags in `gitops/k8s/**/*.yml` to the new SHA and commits.  |
+| CD — deploy        | Argo CD — [`gitops/argo-cd.yml`](gitops/README.md)                        | Auto-syncs `gitops/` into the `ecommerce` namespace (prune + self-heal).      |
+
+### CI — GitHub Actions (`.github/workflows/ci.yml`)
+
+The pipeline runs on **manual dispatch** (`workflow_dispatch`) — deliberately not `on: push`, because its own `update-manifests` job commits to `main`; a push trigger would re-run the pipeline on that commit in a loop.
+
+**Job 1 — `build-and-push`** — a matrix over `auth`, `gateway`, `orders`, `products`, `users`, `frontend`:
+
+1. Configures AWS credentials and logs in to Amazon ECR.
+2. Builds the image — backends from `fashion-ecommerce/backend/services/<service>`, the frontend from `fashion-ecommerce/frontend`.
+3. Tags it `<AWS_ACCOUNT_ID>.dkr.ecr.<AWS_REGION>.amazonaws.com/<service>:<commit-sha>` and pushes it to ECR.
+
+**Job 2 — `update-manifests`** (needs the build):
+
+1. Rewrites the image tag in each backend manifest (`gitops/k8s/backend/<service>.yml`) and the frontend deployment (`gitops/k8s/frontend/deployment.yml`) to the new `<commit-sha>`.
+2. Commits and pushes the change as `github-actions` → Argo CD sees the new revision and syncs the cluster.
+
+One manual run therefore carries a change the whole way: **images in ECR → manifests updated in git → Argo CD deploys them**.
+
+**Required repository secrets:** `AWS_ACCOUNT_ID`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_REGION`.
+
+> **Note:** the committed manifests still reference `<AWS_ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/<service>:latest` (placeholder). The `update-manifests` job matches the *real* ECR URL, so replace `<AWS_ACCOUNT_ID>` in `gitops/k8s/**/*.yml` with the actual account ID (the same prerequisite as the manual deployment) before the first run — until then its tag rewrite is a no-op.
+
+### CD — GitOps with Argo CD (Kubernetes only)
+
+- The `ecommerce` Application ([`gitops/argo-cd.yml`](gitops/README.md)) points at this repository (`path: gitops`, `branch: main`) and continuously syncs the manifests into the cluster with auto-prune + self-heal — the CI pipeline's manifest-bump commits are what it picks up.
 - **Kustomize** (`gitops/kustomization.yml`) composes the Kubernetes manifests (namespace, secrets, database, backend, frontend, ServiceMonitor, dashboard) and plays no role in the Docker Compose deployment.
-- **CI — not set up yet:** no pipeline/workflow files exist in the repository today; images for the Kubernetes deployment are built and pushed to ECR manually (step 2 of the Kubernetes deployment).
+- **Docker Compose has no CI/CD** — `docker compose up -d --build` builds the images locally on the host; ECR and this pipeline are only involved in the Kubernetes deployment.
 
 ---
