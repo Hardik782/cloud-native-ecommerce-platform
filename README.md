@@ -134,7 +134,7 @@ This project supports **two different deployment implementations**. The choice b
 | Configuration | Root `.env` → container env vars | `ecommerce-secrets` **Secret** → env vars |
 | Service discovery | Compose network, service names (`fashion-ecommerce-auth:8000`) | In-cluster DNS (`auth-service:3002`, `gateway-service:3001`) |
 | Database | PostgreSQL container + named volume | PostgreSQL **StatefulSet** + PVC (EBS) |
-| Images | Compose builds them locally | Built and pushed to ECR, then referenced by the manifests |
+| Images | Compose builds them locally | Built and pushed to ECR; the manifests hold short names (`ecommerce-<service>`) that Argo CD rewrites to the ECR URLs |
 | Frontend port | Host `80` → `http://localhost` (nginx container listens on 80) | `frontend-service:80` (ClusterIP) → port-forward or ingress |
 | Gateway endpoint (from the frontend) | `http://fashion-ecommerce-gateway:8000` via `GATEWAY_URL` (`.env`) | `http://gateway-service:3001` — Service maps `3001 → targetPort 8000` |
 | Prometheus targets | Static list in `prometheus/prometheus.yml` | Dynamic `ServiceMonitor` discovery |
@@ -255,11 +255,13 @@ This creates the VPC, the EKS cluster (1–3 `t3.medium` nodes), 6 ECR repositor
 
 ### 2. Build and push images to ECR
 
-Either let the CI pipeline do it (GitHub → **Actions** → *E-Commerce Platform CI Pipeline* → **Run workflow** — it builds and pushes all six images and bumps the manifest tags in one pass, see [CI / CD](#ci--cd)), or do it manually: build, tag and push each service image to the ECR URLs from `terraform output ecr_urls` (replace the `<AWS_ACCOUNT_ID>` placeholder). The Kubernetes manifests reference these exact image names — unlike Docker Compose, images are **not** built on the deployment host.
+Either let the CI pipeline do it (GitHub → **Actions** → *E-Commerce Platform CI Pipeline* → **Run workflow** — it builds and pushes all six images and bumps the manifest tags in one pass, see [CI / CD](#ci--cd)), or do it manually: build and push each service image to the repos from `terraform output ecr_urls` (e.g. `<AWS_ACCOUNT_ID>.dkr.ecr.<AWS_REGION>.amazonaws.com/auth:<sha>`). Repository names must match the Terraform `repositories` list — unlike Docker Compose, images are **not** built on the deployment host.
+
+The manifests themselves keep short, registry-agnostic names (`ecommerce-<service>:latest`); Argo CD's Kustomize `images` override — injected by the Terraform `argocd` module from `var.ecr_urls` — rewrites them to the real ECR URLs at sync time (see [CD — GitOps with Argo CD](#cd--gitops-with-argo-cd-kubernetes-only)).
 
 ### 3. Deploy the application (Argo CD)
 
-Register the Argo CD `Application` (already defined in [`gitops/argo-cd.yml`](gitops/README.md)). Argo CD syncs the `gitops/` Kustomize tree into the `ecommerce` namespace with automated prune + self-healing, injecting config from the `ecommerce-secrets` Secret.
+No separate registration step: the Argo CD `Application` is created **by Terraform** — the `argocd` module adds it through the `argo-cd` Helm release's `extraObjects` ([`infrastructure/modules/argocd/main.tf`](infrastructure/README.md)), so `terraform apply` installs Argo CD *and* the `ecommerce` Application in one pass. It syncs the `gitops/` Kustomize tree into the `ecommerce` namespace with automated prune + self-healing, injecting config from the `ecommerce-secrets` Secret, and its Kustomize `images` override maps the manifests' short `ecommerce-<service>` names to the ECR URLs from `module.ecr.repository_urls`.
 
 ### Ports / service names on Kubernetes
 
@@ -273,7 +275,7 @@ Register the Argo CD `Application` (already defined in [`gitops/argo-cd.yml`](gi
 | Frontend | `gitops/k8s/frontend/deployment.yml`  | `frontend-service`   | `80 → 80`          |
 | Postgres | `gitops/k8s/database/statefulset.yml` | `postgres-service` (headless) | `5432 → 5432` |
 
-> **Note:** Deployment manifests reference images such as `<AWS_ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/gateway:latest` — replace the account ID before applying.
+> **Note:** the Deployments reference short image names such as `ecommerce-gateway:latest`. Argo CD rewrites these to the ECR URLs supplied by Terraform's kustomize `images` override, so no account ID is committed to git. If you apply the manifests **without** Argo CD (plain `kubectl apply -k gitops`), the short names are left untouched — add a kustomize `images:` override for your ECR URLs first.
 
 ---
 
@@ -283,7 +285,7 @@ Register the Argo CD `Application` (already defined in [`gitops/argo-cd.yml`](gi
 | ------------------ | ------------------------------------------------------------------------ | ----------------------------------------------------------------------------- |
 | CI — build & push  | GitHub Actions — [`.github/workflows/ci.yml`](.github/workflows/ci.yml)  | Builds all 6 images and pushes them to ECR tagged with the commit SHA.        |
 | Manifest promotion | Same workflow, `update-manifests` job                                     | Rewrites the image tags in `gitops/k8s/**/*.yml` to the new SHA and commits.  |
-| CD — deploy        | Argo CD — [`gitops/argo-cd.yml`](gitops/README.md)                        | Auto-syncs `gitops/` into the `ecommerce` namespace (prune + self-heal).      |
+| CD — deploy        | Argo CD — `Application` created by the Terraform `argocd` module ([`infrastructure/`](infrastructure/README.md)) | Auto-syncs `gitops/` into the `ecommerce` namespace (prune + self-heal).      |
 
 ### CI — GitHub Actions (`.github/workflows/ci.yml`)
 
@@ -304,11 +306,11 @@ One manual run therefore carries a change the whole way: **images in ECR → man
 
 **Required repository secrets:** `AWS_ACCOUNT_ID`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_REGION`.
 
-> **Note:** the committed manifests still reference `<AWS_ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/<service>:latest` (placeholder). The `update-manifests` job matches the *real* ECR URL, so replace `<AWS_ACCOUNT_ID>` in `gitops/k8s/**/*.yml` with the actual account ID (the same prerequisite as the manual deployment) before the first run — until then its tag rewrite is a no-op.
+> **Note:** the committed manifests use short names (`ecommerce-<service>`) with **no** account ID or registry baked in. The `update-manifests` job rewrites the tag on those short names (`image: ecommerce-<service>:<commit-sha>`), while the Argo CD Application's Kustomize `images` override supplies the ECR repository URL. Because the registry stays out of git, there is **no `<AWS_ACCOUNT_ID>` placeholder to replace** before the first run.
 
 ### CD — GitOps with Argo CD (Kubernetes only)
 
-- The `ecommerce` Application ([`gitops/argo-cd.yml`](gitops/README.md)) points at this repository (`path: gitops`, `branch: main`) and continuously syncs the manifests into the cluster with auto-prune + self-heal — the CI pipeline's manifest-bump commits are what it picks up.
+- The `ecommerce` Application is created by the Terraform `argocd` module ([`infrastructure/modules/argocd`](infrastructure/README.md), **not** a manifest under `gitops/`) as part of the `argo-cd` Helm release's `extraObjects`. It points at this repository (`path: gitops`, `branch: main`) and continuously syncs the manifests into the cluster with auto-prune + self-heal — the CI pipeline's manifest-bump commits are what it picks up. Its Kustomize `images` override replaces the manifests' `ecommerce-<service>` names with the ECR URLs from `module.ecr.repository_urls`.
 - **Kustomize** (`gitops/kustomization.yml`) composes the Kubernetes manifests (namespace, secrets, database, backend, frontend, ServiceMonitor, dashboard) and plays no role in the Docker Compose deployment.
 - **Docker Compose has no CI/CD** — `docker compose up -d --build` builds the images locally on the host; ECR and this pipeline are only involved in the Kubernetes deployment.
 
