@@ -52,10 +52,13 @@ provider "helm" {
 module "argocd" {
   source = "./modules/argocd"
 
+  ecr_urls = module.ecr.repository_urls
+
+
   providers = {
     kubernetes = kubernetes.eks
     helm       = helm.eks
   }
 
-  depends_on = [module.eks]
+  depends_on = [module.eks, module.ecr]
 }

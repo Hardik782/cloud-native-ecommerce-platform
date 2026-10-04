@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: users
-          image: <AWS_ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/users:latest
+          image: ecommerce-users:latest
           ports:
             - containerPort: 8000
           env:

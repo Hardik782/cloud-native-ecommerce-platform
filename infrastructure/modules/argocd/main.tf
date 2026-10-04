@@ -31,6 +31,50 @@ resource "helm_release" "argocd" {
           "server.insecure" = true
         }
       }
+      extraObjects = [
+        {
+          apiVersion = "argoproj.io/v1alpha1"
+          kind       = "Application"
+
+          metadata = {
+            name      = "ecommerce"
+            namespace = "argocd"
+          }
+
+          spec = {
+            project = "default"
+
+            source = {
+              repoURL        = "https://github.com/Hardik782/cloud-native-ecommerce-platform.git"
+              targetRevision = "main"
+              path           = "gitops"
+
+              kustomize = {
+                images = [
+                  "ecommerce-auth=${var.ecr_urls["auth"]}",
+                  "ecommerce-gateway=${var.ecr_urls["gateway"]}",
+                  "ecommerce-orders=${var.ecr_urls["orders"]}",
+                  "ecommerce-products=${var.ecr_urls["products"]}",
+                  "ecommerce-users=${var.ecr_urls["users"]}",
+                  "ecommerce-frontend=${var.ecr_urls["frontend"]}"
+                ]
+              }
+            }
+
+            destination = {
+              server    = "https://kubernetes.default.svc"
+              namespace = "ecommerce"
+            }
+
+            syncPolicy = {
+              automated = {
+                prune    = true
+                selfHeal = true
+              }
+            }
+          }
+        }
+      ]
     })
   ]
 }
