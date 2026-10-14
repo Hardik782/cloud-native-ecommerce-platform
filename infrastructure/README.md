@@ -63,10 +63,95 @@ repositories   = ["frontend", "gateway", "auth", "products", "orders", "users"]
 aws eks update-kubeconfig --region us-east-1 --name ecommerce-cluster
 ```
 
+## Accessing the deployed services
+
+The Terraform configuration installs the application and observability tools as Kubernetes **ClusterIP** Services. **It does not expose the storefront, backend APIs, Grafana, Prometheus, or Argo CD directly through public web ports.** Use `kubectl port-forward` to access them from your own machine. These tunnels are temporary and stop when the command or terminal exits.
+
+### 1. Connect to the EKS cluster
+
+Run this after `terraform apply` (with AWS CLI credentials configured for the account that owns the cluster):
+
+```bash
+aws eks update-kubeconfig --region us-east-1 --name ecommerce-cluster
+kubectl get nodes
+```
+
+If `kubectl get nodes` succeeds, `kubectl` is connected to the cluster. The EKS Kubernetes API endpoint uses HTTPS on port `443`; this is the **control-plane API**, not the storefront URL. API access is still subject to the EKS endpoint access settings and your AWS/IAM permissions.
+
+### 2. Open the storefront
+
+```bash
+kubectl -n ecommerce port-forward svc/frontend-service 4000:80
+```
+
+Keep the command running and open <http://localhost:4000>.
+
+### 3. Open Grafana and Prometheus
+
+Run each command in a **separate terminal** and keep both running while you use the pages.
+
+**Grafana dashboards**
+
+```bash
+kubectl -n monitoring port-forward svc/kube-prometheus-stack-grafana 3000:80
+```
+
+Open <http://localhost:3000>. Retrieve the configured Grafana admin password from the Kubernetes Secret rather than assuming a default password:
+
+```bash
+kubectl -n monitoring get secret kube-prometheus-stack-grafana \
+  -o jsonpath='{.data.admin-password}' | base64 --decode; echo
+```
+
+**Prometheus targets and queries**
+
+```bash
+kubectl -n monitoring port-forward svc/kube-prometheus-stack-prometheus 9090:9090
+```
+
+Open <http://localhost:9090>.
+
+### 4. Open Argo CD
+
+```bash
+kubectl -n argocd port-forward svc/argocd-server 8080:80
+```
+
+Open <http://localhost:8080>. The configured Argo CD server uses HTTP internally (`server.insecure=true`), so use `http://` for this local port-forward. To retrieve the initial admin password, if the default admin account is enabled:
+
+```bash
+kubectl -n argocd get secret argocd-initial-admin-secret \
+  -o jsonpath='{.data.password}' | base64 --decode; echo
+```
+
+Sign in with username `admin`. If that Secret is absent, the initial password may already have been removed or the admin account may be configured differently.
+
+### Port and exposure summary
+
+| Component | Port used on your computer | URL | Publicly exposed by this Terraform configuration? |
+| --- | ---: | --- | --- |
+| Storefront | `4000` | <http://localhost:4000> | No — ClusterIP; local port-forward only |
+| Grafana | `3000` | <http://localhost:3000> | No — ClusterIP; local port-forward only |
+| Prometheus | `9090` | <http://localhost:9090> | No — ClusterIP; local port-forward only |
+| Argo CD | `8080` | <http://localhost:8080> | No — ClusterIP; local port-forward only |
+| EKS Kubernetes API | `443` | Endpoint shown by `terraform output cluster_endpoint` | Public endpoint is configured; access is controlled by EKS endpoint settings and AWS/IAM permissions |
+| Backend APIs and database | Internal Service ports | Access from workloads inside the cluster | No public exposure documented here |
+
+To inspect the Services actually created in the cluster, run:
+
+```bash
+kubectl get svc -A
+kubectl -n ecommerce get svc
+kubectl -n monitoring get svc
+kubectl -n argocd get svc
+```
+
+A `ClusterIP` Service is reachable inside the cluster, not directly from the public internet. `localhost` URLs above work only while the matching `kubectl port-forward` command is running on your computer. For permanent remote access, configure a secured ingress/load balancer and authentication deliberately; do not open Grafana, Prometheus, or Argo CD to the internet just to make them reachable.
+
 ## After provisioning
 
 1. **Build & push images** — tag/push each service image to the ECR URL from `terraform output ecr_urls`. Repo names must match the module's `repositories` list (`frontend`, `gateway`, `auth`, `products`, `orders`, `users`), because the Argo CD Application overrides the manifests' short image names with those exact URLs.
-2. **No placeholder edit needed** — the manifests reference short names (`ecommerce-<service>:latest`) with no account ID committed to git; the ECR URLs are injected at sync time by the Application's Kustomize `images` override (wired from `module.ecr.repository_urls` in `main.tf`).
+2. **No placeholder edit needed** — the manifests reference short names (`ecommerce-<service>:latest`); the ECR URLs are injected at sync time by the Application's Kustomize `images` override (wired from `module.ecr.repository_urls` in `main.tf`).
 3. **Deploy the app** — the Argo CD `Application` is already registered by this Terraform config (`modules/argocd`), so it starts syncing `gitops/` automatically. To deploy without Argo CD, run `kubectl apply -k ../gitops` after adding a kustomize `images:` override for the ECR URLs.
 4. **Observability** — the kube-prometheus-stack (Prometheus + Grafana + Alertmanager) is already installed; the `ecommerce-services` ServiceMonitor and dashboard ConfigMap in `gitops/` light up the "Ecommerce Microservices" Grafana dashboard.
 
