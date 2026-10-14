@@ -56,7 +56,7 @@ jobs:
       - name: Push Docker Image
         run: |
           IMAGE_URI=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ matrix.service }}:${{ github.sha }}
-          echo "Pushing $IMAGE_URI"
+          echo "Pushing Docker image to ECR for service: ${{ matrix.service }}"
           docker push $IMAGE_URI
 
   update-manifests:
