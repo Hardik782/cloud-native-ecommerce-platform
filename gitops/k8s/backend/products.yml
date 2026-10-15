@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: products
-          image: ecommerce-products:latest
+          image: ecommerce-products:823a40e93ecb29ddc6c51a8ba9ef568b5f0a9f73
           ports:
             - containerPort: 8000
           env:
