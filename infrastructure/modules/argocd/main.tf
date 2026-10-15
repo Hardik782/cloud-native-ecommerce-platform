@@ -39,6 +39,9 @@ resource "helm_release" "argocd" {
           metadata = {
             name      = "ecommerce"
             namespace = "argocd"
+            annotations = {
+              "helm.sh/hook" = "post-install,post-upgrade"
+            }
           }
 
           spec = {
